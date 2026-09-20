@@ -1,9 +1,7 @@
-const readline = require("readline");
+const readline = require("readline/promises");
+const { stdin: input, stdout: output } = require("process");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+const rl = readline.createInterface({ input, output });
 
 let productos = [
   { nombre: "Café Americano", precio: 15 },
@@ -23,33 +21,32 @@ let productos = [
 ];
 
 let pedidos = [];
-
 let totalAcumulado = 0;
 
-function agregarPedido(index) {
+async function agregarPedido(index) {
   const producto = productos[index];
   pedidos.push(producto);
   totalAcumulado += producto.precio;
   console.log(producto.nombre + " agregado. Total acumulado: $" + totalAcumulado);
 }
 
-function mostrarProductos() {
+async function mostrar_productos() {
   console.log("\nProductos:");
   productos.forEach((p, i) => console.log(i + 1 + ". " + p.nombre + " - $" + p.precio));
 }
 
-function mostrarPedidos() {
+async function mostrar_pedidos() {
   console.log("\nLista de pedidos:");
   pedidos.forEach(p => console.log("- " + p.nombre + ": $" + p.precio));
   console.log("Total acumulado: $" + totalAcumulado);
 }
 
-function agregarProducto(nombre, precio) {
+async function agregarProducto(nombre, precio) {
   productos.push({ nombre: nombre, precio: precio });
   console.log(nombre + " agregado al menú.");
 }
 
-function mostrarMenu() {
+async function menuCaja() {
   console.log("\n===== CAJA =====");
   console.log("1. Ver productos");
   console.log("2. Agregar producto al pedido");
@@ -58,40 +55,34 @@ function mostrarMenu() {
   console.log("5. Salir");
 }
 
-function preguntar() {
-  mostrarMenu();
-  rl.question("Elige una opción: ", function (respuesta) {
-    const opcion = respuesta.trim();
+async function caja() {
+  let opcion = 0;
+  do {
+    await menuCaja();
+    opcion = await rl.question("Elige una opción: ");
+    opcion = opcion.trim();
 
     if (opcion === "1") {
-      mostrarProductos();
-      rl.question("\nPresiona Enter para volver al menú...", function () {
-        preguntar();
-      });
+      await mostrar_productos();
+      await rl.question("\nPresiona Enter para volver al menú...");
 
     } else if (opcion === "2") {
-      mostrarProductos();
-      rl.question("Número de producto: ", function (num) {
-        const index = parseInt(num) - 1;
-        if (index >= 0 && index < productos.length) {
-          agregarPedido(index);
-        } else {
-          console.log("Producto no válido.");
-        }
-        preguntar();
-      });
+      await mostrar_productos();
+      let num = await rl.question("Número de producto: ");
+      const index = parseInt(num) - 1;
+      if (index >= 0 && index < productos.length) {
+        await agregarPedido(index);
+      } else {
+        console.log("Producto no válido.");
+      }
 
     } else if (opcion === "3") {
-      rl.question("Nombre del nuevo producto: ", function (nombre) {
-        rl.question("Precio: ", function (precio) {
-          agregarProducto(nombre, parseFloat(precio));
-          preguntar();
-        });
-      });
+      let nombre = await rl.question("Nombre del nuevo producto: ");
+      let precio = await rl.question("Precio: ");
+      await agregarProducto(nombre, parseFloat(precio));
 
     } else if (opcion === "4") {
-      mostrarPedidos();
-      preguntar();
+      await mostrar_pedidos();
 
     } else if (opcion === "5") {
       console.log("\nTotal final: $" + totalAcumulado);
@@ -99,9 +90,9 @@ function preguntar() {
 
     } else {
       console.log("Opción no válida.");
-      preguntar();
     }
-  });
+
+  } while (opcion !== "5");
 }
 
-preguntar();
+caja();
