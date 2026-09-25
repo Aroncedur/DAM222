@@ -4,168 +4,62 @@ const { stdin: input, stdout: output } = require('process');
 const rl = readline.createInterface({ input, output });
 
 let productos = [
-  { nombre: "Café Americano", precio: 15, stock: 10 },
-  { nombre: "Chocolate Caliente", precio: 18, stock: 10 },
-  { nombre: "Té", precio: 12, stock: 10 },
-  { nombre: "Agua de sabor", precio: 10, stock: 10 },
-  { nombre: "Refresco", precio: 15, stock: 10 },
-  { nombre: "Pan Dulce", precio: 10, stock: 10 },
-  { nombre: "Dona", precio: 12, stock: 10 },
-  { nombre: "Galletas", precio: 8, stock: 10 },
-  { nombre: "Sandwich", precio: 25, stock: 10 },
-  { nombre: "Torta", precio: 30, stock: 10 },
-  { nombre: "Papas fritas", precio: 15, stock: 10 },
-  { nombre: "Fruta picada", precio: 15, stock: 10 },
-  { nombre: "Yogurt", precio: 15, stock: 10 },
-  { nombre: "Gelatina", precio: 10, stock: 10 }
+  { nombre: "Café Americano", precio: 15, categoria: "Bebida", stock: 10 },
+  { nombre: "Chocolate Caliente", precio: 18, categoria: "Bebida", stock: 10 },
+  { nombre: "Té", precio: 12, categoria: "Bebida", stock: 10 },
+  { nombre: "Pan Dulce", precio: 10, categoria: "Postre", stock: 10 },
+  { nombre: "Dona", precio: 12, categoria: "Postre", stock: 10 }
 ];
 
 let pedidos = [];
 let totalAcumulado = 0;
 
-
-
-function mostrar_productos(mostrarAgotados = true) {
-  console.log("\nLista de productos disponibles:");
-  for (let i = 0; i < productos.length; i++) {
-    if (productos[i].stock > 0 || mostrarAgotados) {
-      const stockTxt = productos[i].stock !== undefined ? `. Stock: ${productos[i].stock}` : '';
-      console.log(`${i + 1}. ${productos[i].nombre}: $${productos[i].precio}${stockTxt}`);
-    }
-  }
-  console.log("\n");
+function notificarListo(numPedido) {
+  console.log(`\nEl pedido #${numPedido} está LISTO.\n`);
 }
 
-function agregarProducto(nombre, precio, stock = 10) {
-  productos.push({ nombre: nombre, precio: precio, stock: stock });
+function notificarCancelado(numPedido) {
+  console.log(`\nEl pedido #${numPedido} ha sido CANCELADO.\n`);
+}
+
+async function cambiarEstadoPedido(callbackListo, callbackCancelado) {
+  let numPedido = await rl.question("Número del pedido: ");
+  let index = parseInt(numPedido) - 1;
+
+  if (index >= 0 && index < pedidos.length) {
+    console.log("1. Pedido listo");
+    console.log("2. Pedido cancelado");
+    let opcion = await rl.question("Elige el estado: ");
+
+    if (opcion === "1") {
+      callbackListo(numPedido);
+    } else if (opcion === "2") {
+      callbackCancelado(numPedido);
+    } else {
+      console.log("Opción no válida.");
+    }
+  } else {
+    console.log("Pedido no encontrado.");
+  }
+}
+
+function agregarProducto(nombre, precio, categoria, stock = 10) {
+  productos.push({ nombre: nombre, precio: precio, categoria: categoria, stock: stock });
   console.log(`${nombre} agregado al menú.`);
 }
 
-async function editarProducto() {
-  if (productos.length === 0) {
-    console.log("\nNo hay productos para editar.\n");
-    return;
-  }
-
-  console.log("\n===== EDITAR PRODUCTOS =====\n");
-  await mostrar_productos(true);
-
-  let numero = await rl.question("\nIngresa el número del producto que quieres editar: ");
-  let posicion = parseInt(numero) - 1;
-
-  if (posicion >= 0 && posicion < productos.length) {
-    let nombre = await rl.question("Ingrese el nuevo nombre del producto: ");
-    let precio = await rl.question("Ingrese el nuevo precio del producto: ");
-    let stock = await rl.question("Ingrese el nuevo stock del producto: ");
-
-    productos[posicion].nombre = nombre;
-    productos[posicion].precio = parseFloat(precio);
-    productos[posicion].stock = Number(stock);
-
-    console.log("\nProducto editado correctamente.\n");
-  } else {
-    console.log("\nNúmero de producto inválido.\n");
-  }
-}
-
-async function eliminarProducto() {
-  if (productos.length === 0) {
-    console.log("\nNo hay productos para eliminar.\n");
-    return;
-  }
-
-  console.log("\n===== ELIMINAR PRODUCTOS =====\n");
-  for (let i = 0; i < productos.length; i++) {
-    console.log(`${i + 1}. ${productos[i].nombre} - $${productos[i].precio}`);
-  }
-
-  let numero = await rl.question("\nIngresa el número del producto que quieres eliminar: ");
-  let posicion = parseInt(numero) - 1;
-
-  if (posicion >= 0 && posicion < productos.length) {
-    productos.splice(posicion, 1);
-    console.log("\nProducto eliminado correctamente.\n");
-  } else {
-    console.log("\nNúmero de producto inválido.\n");
-  }
-}
-
-
-asy function agregarPedido(index) {
-  const producto = productos[index];
-  pedidos.push(producto);
-  totalAcumulado += producto.precio;
-  console.log(`${producto.nombre} agregado. Total acumulado: $${totalAcumulado}`);
-}
-
-async function crear_pedido() {
-  let pedidoActual = [];
-  let seguirAgregando = true;
-  do {
-    await mostrar_productos(false);
-
-    let indiceProducto = Number(await rl.question("Elige el número del producto: ")) - 1;
-
-    if (indiceProducto < 0 || indiceProducto >= productos.length || productos[indiceProducto].stock <= 0) {
-      console.error("Producto inválido o sin stock.");
-      continue;
-    }
-
-    let cantidad = Number(await rl.question("¿Cuántos quieres? "));
-
-    if (cantidad > productos[indiceProducto].stock) {
-      console.log(`No hay suficiente stock. Solo quedan ${productos[indiceProducto].stock}`);
-      continue;
-    }
-
-    pedidoActual.push({
-      nombre: productos[indiceProducto].nombre,
-      precio: productos[indiceProducto].precio,
-      cantidad: cantidad
-    });
-
-    productos[indiceProducto].stock -= cantidad;
-
-    let respuesta = await rl.question("¿Agregar otro producto? (s/n): ");
-    seguirAgregando = respuesta.toLowerCase() === "s";
-
-  } while (seguirAgregando);
-
-  if (pedidoActual.length > 0) {
-    pedidos.push(pedidoActual);
-    console.log("Pedido creado con éxito\n");
-  }
-}
-
-async function mostrar_pedidos() {
-  if (pedidos.length === 0) {
-    console.log("No hay pedidos aún.");
-  } else {
-    for (let i = 0; i < pedidos.length; i++) {
-      if (Array.isArray(pedidos[i])) {
-        console.log(`Pedido ${i + 1}:`);
-        for (let item of pedidos[i]) {
-          console.log(`  - ${item.nombre} x${item.cantidad}: $${item.precio * item.cantidad}`);
-        }
-      } else {
-        console.log(`- ${pedidos[i].nombre}: $${pedidos[i].precio}`);
-      }
-    }
-  }
-}
-
-
-async function menuCaja() {
+function menuCaja() {
   console.log("\n===== CAJA =====");
   console.log("1. Ver productos");
-  console.log("2. Agregar producto al pedido");
+  console.log("2. Agregar o modificar producto de un pedido");
   console.log("3. Agregar nuevo producto al menú");
   console.log("4. Ver lista de pedidos");
   console.log("5. Cobrar y ver total (Subtotal, IVA y Total)");
-  console.log("6. Salir");
+  console.log("6. Notificar estado del pedido (Callbacks)");
+  console.log("7. Salir");
 }
 
-async function calcularCuentaCaja() {
+function calcularCuentaCaja() {
   if (pedidos.length === 0) {
     console.log("\nNo hay productos en el pedido actual.");
     return;
@@ -183,7 +77,7 @@ async function calcularCuentaCaja() {
 
   console.log("\n====== DESGLOSE DE CUENTA ======");
   console.log(`Subtotal: $${subtotal.toFixed(2)}`);
-  console.log(`IVA (16%): $${iva.toFixed(2)}`);
+  console.log(`IVA(16 %): $${iva.toFixed(2)}`);
   console.log(`Total a pagar: $${total.toFixed(2)}`);
   console.log("=================================");
 }
@@ -191,48 +85,172 @@ async function calcularCuentaCaja() {
 async function caja() {
   let opcion = "";
   do {
-    await menuCaja();
+    menuCaja();
     opcion = await rl.question("Elige una opción: ");
     opcion = opcion.trim();
 
     if (opcion === "1") {
-      await mostrar_productos(true);
+      mostrar_productos(true);
 
     } else if (opcion === "2") {
-      await mostrar_productos(false);
-      let num = await rl.question("Número de producto: ");
-      const index = parseInt(num) - 1;
-      if (index >= 0 && index < productos.length) {
-        await agregarPedido(index);
+      if (pedidos.length > 0) {
+        console.log(`Actualmente hay ${pedidos.length} pedidos.`);
+        let indexPedido = Number(await rl.question("Escribe el número del pedido a modificar (0 para nuevo): ")) - 1;
+        if (indexPedido >= 0 && indexPedido < pedidos.length) {
+          await agregarPedido(indexPedido);
+        } else {
+          await agregarPedido();
+        }
       } else {
-        console.log("Producto no válido.");
+        await agregarPedido();
       }
 
     } else if (opcion === "3") {
       let nombre = await rl.question("Nombre del nuevo producto: ");
       let precio = await rl.question("Precio: ");
+      let categoria = await rl.question("Escribe la categoría del producto (Bebida, Postre): ");
       let stock = await rl.question("Stock inicial: ");
-      await agregarProducto(nombre, parseFloat(precio), parseInt(stock) || 10);
+      agregarProducto(nombre, parseFloat(precio), categoria, Number(stock));
 
     } else if (opcion === "4") {
-      await mostrar_pedidos();
+      mostrar_pedidos();
 
     } else if (opcion === "5") {
-      await calcularCuentaCaja();
+      calcularCuentaCaja();
 
     } else if (opcion === "6") {
+      await cambiarEstadoPedido(notificarListo, notificarCancelado);
+
+    } else if (opcion === "7") {
       console.log("Saliendo de caja...");
 
     } else {
       console.log("Opción no válida.");
     }
 
-  } while (opcion !== "6");
+  } while (opcion !== "7");
 }
 
-// ==========================================
-// MÓDULO DE COCINA
-// ==========================================
+function mostrar_productos(mostrarAgotados = true) {
+  console.log("\nLista de productos:");
+  for (let i = 0; i < productos.length; i++) {
+    if (productos[i].stock > 0 || mostrarAgotados) {
+      console.log(`${i + 1}. ${productos[i].nombre}: $${productos[i].precio} | Categoría: ${productos[i].categoria} | Stock: ${productos[i].stock}`);
+    }
+  }
+}
+
+function productoEnPromocion(index) {
+  let d = new Date();
+  return (productos[index].categoria === "Bebida" && d.getDay() == 2) || (productos[index].categoria === "Postre" && d.getDay() == 3);
+}
+
+async function agregarPedido(num = -1) {
+  let pedidoActual = [];
+  if (num >= 0) {
+    pedidoActual = pedidos[num];
+  }
+  let seguirAgregando = true;
+  do {
+    mostrar_productos(false);
+    let indiceProducto = Number(await rl.question("Elige el número del producto: ")) - 1;
+
+    if (indiceProducto < 0 || indiceProducto >= productos.length || productos[indiceProducto].stock <= 0) {
+      console.log("Producto no válido o sin stock.");
+      continue;
+    }
+
+    let cantidad = Number(await rl.question("¿Cuántos quieres? "));
+
+    if (cantidad > productos[indiceProducto].stock) {
+      console.log(`No hay suficiente stock. Solo quedan ${productos[indiceProducto].stock}`);
+      continue;
+    }
+
+    if (productoEnPromocion(indiceProducto)) {
+      console.log("Este producto está en promoción al 2x1 el día de hoy");
+      cantidad *= 2;
+    }
+
+    pedidoActual.push({
+      nombre: productos[indiceProducto].nombre,
+      precio: productos[indiceProducto].precio,
+      cantidad: cantidad
+    });
+
+    productos[indiceProducto].stock -= cantidad;
+
+    let respuesta = await rl.question("¿Agregar otro producto? (s/n): ");
+    seguirAgregando = respuesta.toLowerCase() === "s";
+
+  } while (seguirAgregando);
+
+  if (num < 0) {
+    pedidos.push(pedidoActual);
+    console.log("Pedido creado con éxito\n");
+  } else {
+    pedidos[num] = pedidoActual;
+    console.log("El pedido ha sido actualizado exitosamente\n");
+  }
+}
+
+function mostrar_pedidos() {
+  if (pedidos.length === 0) {
+    console.log("\nNo hay pedidos aún.");
+  } else {
+    for (let i = 0; i < pedidos.length; i++) {
+      if (Array.isArray(pedidos[i])) {
+        console.log(`\nPedido ${i + 1}:`);
+        for (let item of pedidos[i]) {
+          console.log(`  - ${item.nombre} x${item.cantidad}: $${item.precio * item.cantidad}`);
+        }
+      } else {
+        console.log(`- ${pedidos[i].nombre}: $${pedidos[i].precio}`);
+      }
+    }
+  }
+}
+
+async function buscarProducto() {
+  let opcionn = "";
+  do {
+    console.log("\n==== BUSCAR PRODUCTOS ====");
+    console.log("1. Productos caros");
+    console.log("2. Productos baratos");
+    console.log("3. Bebidas");
+    console.log("4. Postres");
+    console.log("5. Regresar al menu");
+
+    opcionn = await rl.question("Seleccione una opcion: ");
+    switch (opcionn) {
+      case "1":
+        let productosCaros = productos.filter(producto => producto.precio > 20);
+        console.log("Productos caros:");
+        productosCaros.forEach(p => console.log(p.nombre + " - $" + p.precio));
+        break;
+      case "2":
+        let productosBaratos = productos.filter(producto => producto.precio <= 20);
+        console.log("Productos baratos:");
+        productosBaratos.forEach(p => console.log(p.nombre + " - $" + p.precio));
+        break;
+      case "3":
+        let bebidas = productos.filter(producto => producto.categoria === "Bebida");
+        console.log("Bebidas:");
+        bebidas.forEach(p => console.log(p.nombre + " - $" + p.precio));
+        break;
+      case "4":
+        let postres = productos.filter(producto => producto.categoria === "Postre");
+        console.log("Postres:");
+        postres.forEach(p => console.log(p.nombre + " - $" + p.precio));
+        break;
+      case "5":
+        break;
+      default:
+        console.log("Opción inválida");
+        break;
+    }
+  } while (opcionn !== "5");
+}
 
 async function cocina() {
   let opcion = "";
@@ -241,8 +259,9 @@ async function cocina() {
     console.log("1. Agregar producto");
     console.log("2. Mostrar productos");
     console.log("3. Editar producto");
-    console.log("4. Eliminar producto");
-    console.log("5. Salir");
+    console.log("4. Buscar producto");
+    console.log("5. Eliminar producto");
+    console.log("6. Salir");
 
     opcion = await rl.question("Seleccione una opción: ");
 
@@ -250,96 +269,57 @@ async function cocina() {
       case "1":
         let nombre = await rl.question("Nombre del nuevo producto: ");
         let precio = await rl.question("Precio: ");
+        let categoria = await rl.question("Escribe la categoría del producto (Bebida, Postre): ");
         let stock = await rl.question("Stock inicial: ");
-        await agregarProducto(nombre, parseFloat(precio), parseInt(stock) || 10);
+        agregarProducto(nombre, parseFloat(precio), categoria, Number(stock));
         break;
       case "2":
-        await mostrar_productos(true);
+        mostrar_productos(true);
         break;
       case "3":
         await editarProducto();
         break;
       case "4":
-        await eliminarProducto();
+        await buscarProducto();
         break;
       case "5":
+        console.log("Opción de eliminar seleccionada.");
+        break;
+      case "6":
         console.log("Saliendo de cocina...");
         break;
       default:
-        console.log("Opción inválida. Intente de nuevo.");
+        console.log("Opción inválida.");
         break;
     }
-  } while (opcion.trim() !== "5");
+  } while (opcion.trim() !== "6");
 }
 
-// ==========================================
-// MÓDULO DE CLIENTE
-// ==========================================
+async function editarProducto() {
+  if (productos.length === 0) {
+    console.log("\nNo hay productos para editar.\n");
+    return;
+  }
 
-async function cliente() {
-  let opcion = 0;
-  do {
-    console.log("\n==== MÓDULO CLIENTE ====");
-    console.log("1. Consultar productos");
-    console.log("2. Crear pedido");
-    console.log("3. Mostrar pedidos actuales");
-    console.log("4. Salir");
-    opcion = Number(await rl.question("Elige la opción: "));
+  mostrar_productos(true);
+  let numero = await rl.question("\nIngresa el número del producto que quieres editar: ");
+  let posicion = parseInt(numero) - 1;
 
-    switch (opcion) {
-      case 1:
-        await mostrar_productos(false);
-        break;
-      case 2:
-        await crear_pedido();
-        break;
-      case 3:
-        await mostrar_pedidos();
-        break;
-      case 4:
-        console.log("Saliendo del menú cliente...");
-        break;
-      default:
-        console.error("Opción inválida");
-        break;
-    }
-  } while (opcion !== 4);
+  if (posicion >= 0 && posicion < productos.length) {
+    let nombre = await rl.question("Ingrese el nuevo nombre del producto: ");
+    let precio = await rl.question("Ingrese el nuevo precio del producto: ");
+    let stock = await rl.question("Ingrese el nuevo stock del producto: ");
+    let categoria = await rl.question("Ingrese la categoría del producto (Bebida, Postre): ");
+
+    productos[posicion].nombre = nombre;
+    productos[posicion].precio = parseFloat(precio);
+    productos[posicion].stock = Number(stock);
+    productos[posicion].categoria = categoria;
+
+    console.log("\nProducto editado correctamente.\n");
+  } else {
+    console.log("\nNúmero de producto inválido.\n");
+  }
 }
 
-// ==========================================
-// MENÚ PRINCIPAL
-// ==========================================
-
-async function main() {
-  let opcion = 0;
-  do {
-    console.log("\n===== MENÚ PRINCIPAL =====");
-    console.log("1. Caja");
-    console.log("2. Cocina");
-    console.log("3. Cliente");
-    console.log("4. Salir del sistema");
-    opcion = Number(await rl.question("Elige la opción: "));
-
-    switch (opcion) {
-      case 1:
-        await caja();
-        break;
-      case 2:
-        await cocina();
-        break;
-      case 3:
-        await cliente();
-        break;
-      case 4:
-        console.log("Cerrando el sistema. ¡Hasta luego!");
-        break;
-      default:
-        console.error("Opción inválida");
-        break;
-    }
-  } while (opcion !== 4);
-
-  rl.close();
-}
-
-main();
+caja();
