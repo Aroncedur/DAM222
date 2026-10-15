@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { Saludo } from './componentes/Saludo'; 
 import { Saludos2 } from './componentes/Saludos2'; 
+import { Perfil } from './componentes/Perfil';
 
 
 
@@ -13,6 +14,7 @@ import { Saludos2 } from './componentes/Saludos2';
 export default function App() {
   return (
     <View style={styles.container}>
+      <Perfil />
 
       <Text>Hola mundo React Native</Text>
       <Image source={require("./assets/wave.png")} style={{ width: 100, height: 100 }} />
