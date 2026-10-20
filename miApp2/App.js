@@ -1,46 +1,40 @@
-
 /* 1. Zona de importaciones */
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { Saludo } from './componentes/Saludo'; 
-import { Saludos2 } from './componentes/Saludos2'; 
 import { Perfil } from './componentes/Perfil';
 
-
-
-/* 2. Zona Main */
-
-
+/* 2. Zona main */
 export default function App() {
   return (
     <View style={styles.container}>
-      <Perfil />
 
-      <Text>Hola mundo React Native</Text>
-      <Image source={require("./assets/wave.png")} style={{ width: 100, height: 100 }} />
-      <Text>-----------------------------------------</Text>
-
-      <Saludo></Saludo>
-      <Saludo/>
-
-      <Text>-----------------------------------------</Text>
-
-      <Saludos2></Saludos2>
-      <Saludos2/>
-
+      <Perfil style={styles.tarjeta1} nombre="alan" materia="movil" /> 
+      
+      <Perfil style={styles.tarjeta2} nombre="gus" cuatri="4"/>
+      
+      <Perfil style={styles.tarjeta3} nombre="wendy" carrera="TIID"/>
+    
       <StatusBar style="auto" />
 
     </View>
   );
 }
 
-/* 3. Zona estiloz y posicionamiento */
-
+/* 3. Zona Estilos y posicionamiento */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  tarjeta1: {
+    backgroundColor: 'green',
+  },
+  tarjeta2: {
+    backgroundColor: 'yellow',
+  },
+  tarjeta3: {
+    backgroundColor: 'pink',
   },
 });
