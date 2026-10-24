@@ -1,22 +1,13 @@
 /* 1. Zona de importaciones */
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { Perfil } from './componentes/Perfil';
+import MenuScreen from './screens/MenuScreen';
 
 /* 2. Zona main */
 export default function App() {
   return (
-    <View style={styles.container}>
 
-      <Perfil style={styles.tarjeta1} nombre="alan" materia="movil" /> 
-      
-      <Perfil style={styles.tarjeta2} nombre="gus" cuatri="4"/>
-      
-      <Perfil style={styles.tarjeta3} nombre="wendy" carrera="TIID"/>
-    
-      <StatusBar style="auto" />
-
-    </View>
+<MenuScreen></MenuScreen>
   );
 }
 
@@ -25,17 +16,8 @@ const styles = StyleSheet.create({
 container: {
   flex: 1,
   backgroundColor: '#fff',
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  justifyContent: 'space-evenly',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
 },
-  tarjeta1: {
-    backgroundColor: 'red',
-  },
-  tarjeta2: {
-    backgroundColor: 'pink',
-  },
-  tarjeta3: {
-    backgroundColor: 'orange',
-  },
 });
