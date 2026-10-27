@@ -29,7 +29,7 @@ export default function MenuScreen() {
             <View style={styles.container}>
               <>MENU DE PRACTICAS</>
               <Button title='Tarjetas' onPress={ ()=>setScreen('tarjetas') } ></Button>
-              <Button title='SafeAreaView' onPress={ ()=>setScreen('SafeScreen') } ></Button>
+              <Button title='SafeAreaView' onPress={ ()=>setScreen('safeScreen') } ></Button>
               <Button title='ActivityIndicator' onPress={ ()=>setScreen('ActivityIndicatorScreen') } ></Button>
               <Button title='FlatList' onPress={ ()=>setScreen('FlatListScreen') } ></Button>
               <Button title='ImageBackground' onPress={ ()=>setScreen('ImageBackgroundScreen') } ></Button>
