@@ -4,7 +4,7 @@ export default function SwitchEjemplo({oscuro , cambiarModo}){
 
     return(
         <View>
-            <Text style = {[styles.titulo , {color:oscuro ? '#FFFFFF' : '#000000'}]}>
+            <Text style = {[StyleSheet.titulo , {color:oscuro ? '#FFFFFF' : '#000000'}]}>
                 Modo Oscuro
             </Text>
             <Switch
