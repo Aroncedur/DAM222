@@ -18,7 +18,7 @@ export default function ImageBackgroungScreen() {
     if (showSplash){
         return(
             <View style = {styles.splashContainer}>
-                <ActivityIndicator
+            <ActivityIndicator
                     size= "Large" color = "#f0f0f0" style = {{marginTop: 20}}
                 ></ActivityIndicator>
                 <Text style = {styles.splashLoading}> Cargando...</Text>
