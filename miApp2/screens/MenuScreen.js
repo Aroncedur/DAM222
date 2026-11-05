@@ -1,63 +1,80 @@
+/* 1 - Zona de importaciones */
 
-/*1.- Zona de importaciones */
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, Button} from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import { useState } from 'react';
 import Tarjetas from './Tarjetas';
-import SafeScrean from './SafeScreen';
-import PressableSwitch from './PressableSwitch'
+import SafeScreen from './SafeScreen';
+import PressableSwitch from './PressableSwitch';
+import TextInputScreen from './TextInputScreen';
+import FlatListScreen from './FlatListScreen';
+import ImageBackgroungScreen from './ImageBackgroungScreen';
+import ModalBottomScreen from './ModalBottomScreen'
+import ActivityIndicatorScreen from './ActivityIndicatorScreen';
 
-/* 2.- Zona Main */
+/* 2 - Zona del main */
 export default function MenuScreen() {
 
-    const[screen,setScreen] = useState('menu');
+    const [screen, setScreen] = useState('menu');
 
-    switch(screen){
+    switch (screen) {
         case 'tarjetas':
             return <Tarjetas/>
-
         case 'safescreen':
-            return <SafeScrean/>
-        
-        case 'pressable':
-            return <PressableSwitch/>
-
+            return <SafeScreen/>
+        case 'pressablescreen':
+            return <PressableScreen/>
+        case 'textinputscreen':
+            return <TextInputScreen/>
+        case 'flatlistscreen':
+            return <FlatListScreen/>
+        case 'imagebackgroungscreen':
+            return <ImageBackgroungScreen/>
+        case 'modalscreen':
+            return <ModalBottomScreen/>
+        case 'activityindicatorscreen':
+            return <ActivityIndicatorScreen/>
         case 'menu':
             default:
-                 return (
+            return (
+                <View style={[styles.container, styles.borde]}>
+                    <Text style={styles.titulo}> Menu de Practicas </Text>
+                    <Button title='Tarjetas' onPress={ ()=> setScreen('tarjetas') }></Button>
+                    <Button title='SafeAreaView' onPress={ ()=> setScreen('safescreen') }></Button>
+                    <Button title='Pressable' onPress={ ()=> setScreen('pressablescreen') }></Button>
+                    <Button title='textinputscreen' onPress={ ()=> setScreen('textinputscreen') }></Button>
 
-                <View style={styles.container}>
-
-                    <Text> Menu de practicas </Text>
-
-                    <Button title="Tarjetas" onPress={()=>setScreen('tarjetas')}></Button>
-                    <Button title="SafeAreaView" onPress={()=>setScreen('safescreen')}></Button>
-
-                    <Button title="Pressable & switch" onPress={()=>setScreen('pressable')}></Button>
-
-                    <Button title="TextInput & Alert" onPress={()=>setScreen('safescreen')}></Button>
-
-                    <Button title="FlatList & SectionLis" onPress={()=>setScreen('safescreen')}></Button>
-
-                    <Button title="ImageBackgroung" onPress={()=>setScreen('safescreen')}></Button>
-
-                    <Button title="Modal & Botton sheet" onPress={()=>setScreen('safescreen')}></Button>
-
-                    <Button title="ActivityIndicator , KeyboardAvoiding" onPress={()=>setScreen('safescreen')}></Button>
-                <StatusBar style="auto" />
+                    <Button title='flatlistscreen' onPress={ ()=> setScreen('flatlistscreen') }></Button>
+                    <Button title='imagebackgroungscreen' onPress={ ()=> setScreen('imagebackgroungscreen') }></Button>
+                    <Button title='modalscreen' onPress={ ()=> setScreen('modalscreen') }></Button>
+                    <Button title='activityindicatorscreen' onPress={ ()=> setScreen('activityindicatorscreen') }></Button>
+                    <StatusBar style="auto" />
                 </View>
+            ); //return
+    } //Switch
+} //funcion
 
-                     );
-  } /* Esta llave es el switch */
-
-} /* Esta llave es de la funcion */
-
-/* 3.- Zona de estilos y posicionamientos */
+    /* 3 -  Zona estilos y posicionamiento */
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+    },
+    titulo:{
+        fontSize: 24,
+        fontWeight: '800',
+        textTransform: 'uppercase',
+        backgroundColor: '#e9dcdc',
+        borderRadius: 10,
+        padding: 10
+    },
+    borde: {
+        borderWidth: 3,
+        borderRadius: 10,
+        padding: 15,
+        margin: 10,
+        backgroundColor: '#ceb3b3',
+    },
 });
