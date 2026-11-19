@@ -37,7 +37,7 @@ export default function SectionListScreen() {
         renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}
         renderSectionHeader={({ section }) => (
           <Text style={styles.encabezado}>{section.titulo}</Text>
-        )}
+        )}bn
       />
     </View>
   );
